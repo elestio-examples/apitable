@@ -211,9 +211,9 @@ services:
     volumes:
       - ${DATA_PATH}/.data/rabbitmq:/var/lib/rabbitmq
     expose:
-      - "172.17.0.1:5671:5671"
-      - "172.17.0.1:5672:5672"
-      - "172.17.0.1:15672:15672"
+      - "172.17.0.1:5671"
+      - "172.17.0.1:5672"
+      - "172.17.0.1:15672"
     environment:
       - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
