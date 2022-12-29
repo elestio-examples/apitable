@@ -6,7 +6,7 @@ services:
     pull_policy: ${IMAGE_PULL_POLICY:-missing}
     restart: always
     expose:
-      - "172.17.0.1:7776:8080"
+      - "172.17.0.1:8080"
     env_file:
       - .env
     depends_on:
@@ -18,7 +18,7 @@ services:
     pull_policy: ${IMAGE_PULL_POLICY:-missing}
     restart: always
     expose:
-      - "172.17.0.1:7776:8080"
+      - "172.17.0.1:8080"
     environment:
       - TZ=${TIMEZONE}
       - BASEURL=${MINIO_ENDPOINT}
@@ -30,7 +30,7 @@ services:
     env_file:
       - .env
     expose:
-      - "172.17.0.1:8081:8081"
+      - "172.17.0.1:8081"
     environment:
       - TZ=${TIMEZONE}
       - OSS_TYPE=aws
@@ -52,8 +52,8 @@ services:
     pull_policy: ${IMAGE_PULL_POLICY:-missing}
     restart: always
     expose:
-      - "172.17.0.1:3333:3333"
-      - "172.17.0.1:3334:3334"
+      - "172.17.0.1:3333"
+      - "172.17.0.1:3334"
     env_file:
       - .env
     environment:
@@ -70,8 +70,8 @@ services:
     pull_policy: ${IMAGE_PULL_POLICY:-missing}
     restart: always
     expose:
-      - "172.17.0.1:3333:3333"
-      - "172.17.0.1:3334:3334"
+      - "172.17.0.1:3333"
+      - "172.17.0.1:3334"
     env_file:
       - .env
     environment:
@@ -91,10 +91,10 @@ services:
     pull_policy: ${IMAGE_PULL_POLICY:-missing}
     restart: always
     expose:
-      - "172.17.0.1:3001:3001"
-      - "172.17.0.1:3002:3002"
-      - "172.17.0.1:3005:3005"
-      - "172.17.0.1:3007:3007"
+      - "172.17.0.1:3001"
+      - "172.17.0.1:3002"
+      - "172.17.0.1:3005"
+      - "172.17.0.1:3007"
     environment:
       - PORT=3001
       - NOTIFICATION_PORT=3002
@@ -147,7 +147,7 @@ services:
     restart: always
     command: server /data
     expose:
-      - "172.17.0.1:9000:9000"
+      - "172.17.0.1:9000"
     volumes:
       - ${DATA_PATH}/.data/minio/data:/data
       - ${DATA_PATH}/.data/minio/config:/root/.minio
@@ -174,7 +174,7 @@ services:
           "${REDIS_PASSWORD}",
       ]
     expose:
-      - "172.17.0.1:6379:6379"
+      - "172.17.0.1:6379"
     volumes:
       - ${DATA_PATH}/.data/redis:/data
     environment:
@@ -187,7 +187,7 @@ services:
     volumes:
       - ${DATA_PATH}/.data/mysql:/var/lib/mysql
     expose:
-      - "172.17.0.1:3306:3306"
+      - "172.17.0.1:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
