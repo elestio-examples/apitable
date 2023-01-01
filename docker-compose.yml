@@ -5,16 +5,13 @@ services:
     image: ${IMAGE_REGISTRY}/${IMAGE_WEB_SERVER}
     pull_policy: ${IMAGE_PULL_POLICY:-missing}
     restart: always
-    ports:
-    # - ${NGINX_HTTP_PORT:-80}:80
-    - 172.17.0.1:7538:443
     expose:
       - "8080"
     env_file:
       - .env
-    # depends_on:
-    #   backend-server:
-    #     condition: service_healthy
+    depends_on:
+      backend-server:
+        condition: service_healthy
 
   imageproxy-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_IMAGEPROXY_SERVER}
@@ -43,12 +40,12 @@ services:
       - socket-server
       - minio
       - rabbitmq
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -sS 'http://localhost:8081' || exit 1"]
-    #   interval: 10s
-    #   timeout: 10s
-    #   start_period: 30s
-    #   retries: 30
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sS 'http://localhost:8081' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      start_period: 30s
+      retries: 30
 
   room-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_ROOM_SERVER}
@@ -111,38 +108,39 @@ services:
       - rabbitmq
 
   # Third Party Dockers
-  # gateway:
-  #   image: ${IMAGE_GATEWAY}
-  #   pull_policy: ${IMAGE_PULL_POLICY:-missing}
-  #   restart: always
-  #   ports:
-  #     - ${NGINX_HTTP_PORT:-80}:80
-  #     - ${NGINX_HTTPS_PORT:-443}:443
-  #   volumes:
-  #     - ./gateway/conf.d:/etc/nginx/conf.d
-  #   environment:
-  #     - TZ=${TIMEZONE}
-  #   networks:
-  #     - apitable
-  #   depends_on:
-  #     mysql:
-  #       condition: service_started
-  #     minio:
-  #       condition: service_started
-  #     backend-server:
-  #       condition: service_started
-  #     room-server:
-  #       condition: service_started
-  #     socket-server:
-  #       condition: service_started
-  #     imageproxy-server:
-  #       condition: service_started
-  #     web-server:
-  #       condition: service_started
-  #     init-data-mysql:
-  #       condition: service_completed_successfully
-  #     init-data-minio:
-  #       condition: service_completed_successfully
+  gateway:
+    image: ${IMAGE_GATEWAY}
+    pull_policy: ${IMAGE_PULL_POLICY:-missing}
+    restart: always
+    ports:
+      - 172.17.0.1:7538:443
+      # - ${NGINX_HTTP_PORT:-80}:80
+      # - ${NGINX_HTTPS_PORT:-443}:443
+    volumes:
+      - ./gateway/conf.d:/etc/nginx/conf.d
+    environment:
+      - TZ=${TIMEZONE}
+    networks:
+      - apitable
+    depends_on:
+      mysql:
+        condition: service_started
+      minio:
+        condition: service_started
+      backend-server:
+        condition: service_started
+      room-server:
+        condition: service_started
+      socket-server:
+        condition: service_started
+      imageproxy-server:
+        condition: service_started
+      web-server:
+        condition: service_started
+      init-data-mysql:
+        condition: service_completed_successfully
+      init-data-minio:
+        condition: service_completed_successfully
 
   minio:
     image: ${IMAGE_MINIO}
@@ -158,11 +156,11 @@ services:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - TZ=${TIMEZONE}
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -sS 'http://localhost:9000' || exit 1"]
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 15
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sS 'http://localhost:9000' || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
 
   redis:
     image: ${IMAGE_REDIS}
@@ -200,12 +198,12 @@ services:
       --collation-server=utf8mb4_general_ci
       --sql_mode=IGNORE_SPACE,NO_ENGINE_SUBSTITUTION
       --lower_case_table_names=2
-    # healthcheck:
-    #   test: "mysql ${MYSQL_DATABASE} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e 'SELECT 1;'"
-    #   interval: 10s
-    #   timeout: 10s
-    #   start_period: 30s
-    #   retries: 30
+    healthcheck:
+      test: "mysql ${MYSQL_DATABASE} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e 'SELECT 1;'"
+      interval: 10s
+      timeout: 10s
+      start_period: 30s
+      retries: 30
 
   rabbitmq:
     image: ${IMAGE_RABBITMQ}
@@ -236,9 +234,9 @@ services:
       - DB_PASSWORD=${MYSQL_PASSWORD}
       - DATABASE_TABLE_PREFIX=${DATABASE_TABLE_PREFIX}
       - ACTION=update
-    # depends_on:
-    #   mysql:
-    #     condition: service_healthy
+    depends_on:
+      mysql:
+        condition: service_healthy
 
   init-data-mysql:
     image: ${IMAGE_REGISTRY}/${IMAGE_INIT_DATA_MYSQL}
@@ -252,11 +250,11 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
     env_file:
       - .env
-    # depends_on:
-      # mysql:
-      #   condition: service_healthy
-      # init-db:
-      #   condition: service_completed_successfully
+    depends_on:
+      mysql:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
     command:
       - /bin/bash
       - -c
@@ -270,6 +268,6 @@ services:
       - TZ=${TIMEZONE}
     env_file:
       - .env
-    # depends_on:
-    #   minio:
-    #     condition: service_healthy
+    depends_on:
+      minio:
+        condition: service_healthy
