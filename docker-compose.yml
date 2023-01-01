@@ -120,8 +120,6 @@ services:
       - ./gateway/conf.d:/etc/nginx/conf.d
     environment:
       - TZ=${TIMEZONE}
-    networks:
-      - apitable
     depends_on:
       mysql:
         condition: service_started
