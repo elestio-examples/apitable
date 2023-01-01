@@ -12,9 +12,9 @@ services:
       - "8080"
     env_file:
       - .env
-    depends_on:
-      backend-server:
-        condition: service_healthy
+    # depends_on:
+    #   backend-server:
+    #     condition: service_healthy
 
   imageproxy-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_IMAGEPROXY_SERVER}
@@ -43,12 +43,12 @@ services:
       - socket-server
       - minio
       - rabbitmq
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sS 'http://localhost:8081' || exit 1"]
-      interval: 10s
-      timeout: 10s
-      start_period: 30s
-      retries: 30
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -sS 'http://localhost:8081' || exit 1"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   start_period: 30s
+    #   retries: 30
 
   room-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_ROOM_SERVER}
@@ -158,11 +158,11 @@ services:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - TZ=${TIMEZONE}
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sS 'http://localhost:9000' || exit 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 15
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -sS 'http://localhost:9000' || exit 1"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 15
 
   redis:
     image: ${IMAGE_REDIS}
@@ -200,12 +200,12 @@ services:
       --collation-server=utf8mb4_general_ci
       --sql_mode=IGNORE_SPACE,NO_ENGINE_SUBSTITUTION
       --lower_case_table_names=2
-    healthcheck:
-      test: "mysql ${MYSQL_DATABASE} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e 'SELECT 1;'"
-      interval: 10s
-      timeout: 10s
-      start_period: 30s
-      retries: 30
+    # healthcheck:
+    #   test: "mysql ${MYSQL_DATABASE} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e 'SELECT 1;'"
+    #   interval: 10s
+    #   timeout: 10s
+    #   start_period: 30s
+    #   retries: 30
 
   rabbitmq:
     image: ${IMAGE_RABBITMQ}
@@ -236,9 +236,9 @@ services:
       - DB_PASSWORD=${MYSQL_PASSWORD}
       - DATABASE_TABLE_PREFIX=${DATABASE_TABLE_PREFIX}
       - ACTION=update
-    depends_on:
-      mysql:
-        condition: service_healthy
+    # depends_on:
+    #   mysql:
+    #     condition: service_healthy
 
   init-data-mysql:
     image: ${IMAGE_REGISTRY}/${IMAGE_INIT_DATA_MYSQL}
@@ -253,8 +253,8 @@ services:
     env_file:
       - .env
     depends_on:
-      mysql:
-        condition: service_healthy
+      # mysql:
+      #   condition: service_healthy
       init-db:
         condition: service_completed_successfully
     command:
@@ -270,6 +270,6 @@ services:
       - TZ=${TIMEZONE}
     env_file:
       - .env
-    depends_on:
-      minio:
-        condition: service_healthy
+    # depends_on:
+    #   minio:
+    #     condition: service_healthy
