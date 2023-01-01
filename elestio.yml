@@ -72,6 +72,8 @@ environments:
     value: "apitable@com"
   - key: "MYSQL_DATABASE"
     value: "apitable"
+  - key: "MYSQL_ROOT_PASSWORD"
+    value: "random_password"
   - key: "DATABASE_TABLE_PREFIX"
     value: "apitable_"
   - key: "REDIS_HOST"
