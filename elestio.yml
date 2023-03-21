@@ -156,6 +156,8 @@ environments:
     value: "assets"
   - key: "DATA_PATH"
     value: "./data"
+  - key: "IMAGE_INIT_APPDATA"
+    value: "apitable/init-appdata:latest"
 
 config:
   runTime: "dockerCompose"
