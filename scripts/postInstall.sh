@@ -21,5 +21,5 @@ curl 'https://'${DOMAIN}'/api/v1/register' \
   -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36' \
   -H 'x-front-version: v0.99.1-beta+1631.5934942576.2bf3684b35e428c284be680a05872cd1ba5aa615' \
   -H 'x-xsrf-token: 78a3f04f-dfdd-47a9-a3bc-a1d4ef3b5bb1' \
-  --data-raw '{"username":"'${ADMIN_EMAIL}'","credential":"'${ADMIN_EMAIL}'"}' \
+  --data-raw '{"username":"'${ADMIN_EMAIL}'","credential":"'${ADMIN_PASSWORD}'"}' \
   --compressed
