@@ -110,7 +110,9 @@ services:
     volumes:
       - ${DATA_PATH}/mysql:/var/lib/mysql
     expose:
-      - "172.17.0.1:33063306"
+      - "3306"
+    ports:
+      - "172.17.0.1:3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
