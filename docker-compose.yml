@@ -110,7 +110,7 @@ services:
     volumes:
       - ${DATA_PATH}/mysql:/var/lib/mysql
     expose:
-      - "3306"
+      - "172.17.0.1:33063306"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -156,3 +156,21 @@ services:
     depends_on:
       - mysql
       - init-db
+
+  pma:
+    image: phpmyadmin
+    restart: always
+    links:
+      - mysql:mysql
+    ports:
+      - "172.17.0.1:24781:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USERNAME}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
+      UPLOAD_LIMIT: 500M
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: ${SOFTWARE_PASSWORD}
+    depends_on:
+      - mysql
