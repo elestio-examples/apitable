@@ -17,6 +17,7 @@ ports:
     isAuth: true
     login: "root"
     password: "random_password"
+    loginTitle: "PHPMyAdmin"
   - protocol: "TCP"
     targetProtocol: "TCP"
     listeningPort: "23060"
@@ -219,6 +220,6 @@ lifeCycleConfig:
   postRestoreCommand: "./scripts/postRestore.sh"
 webUI:
   - url: "https://[CI_CD_DOMAIN]"
-    label: "Jenkins Admin"
+    label: "Apitable"
     login: "[ADMIN_EMAIL]"
     password: "[ADMIN_PASSWORD]"
