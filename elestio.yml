@@ -125,7 +125,7 @@ environments:
   - key: "SERVER_DOMAIN"
     value: "https://[CI_CD_DOMAIN]"
   - key: "CALLBACK_DOMAIN"
-    value: "https://[CI_CD_DOMAIN]"
+    value: ""
   - key: "CORS_ORIGINS"
     value: "*"
   - key: "SOCKET_DOMAIN"
