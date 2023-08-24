@@ -192,6 +192,8 @@ environments:
     value: "assets"
   - key: "USE_NATIVE_MODULE"
     value: "0"
+  - key: "DOMAIN"
+    value: "[CI_CD_DOMAIN]"
 
 config:
   runTime: "dockerCompose"
