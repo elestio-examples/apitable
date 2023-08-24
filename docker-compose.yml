@@ -3,7 +3,6 @@ version: "3.9"
 services:
   web-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_WEB_SERVER}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     expose:
       - "8080"
@@ -12,7 +11,6 @@ services:
 
   imageproxy-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_IMAGEPROXY_SERVER}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     expose:
       - "8080"
@@ -22,7 +20,6 @@ services:
 
   backend-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_BACKEND_SERVER}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     env_file:
       - ./.env
@@ -30,19 +27,12 @@ services:
       - "8081"
     environment:
       - TZ=${TIMEZONE}
+      - DEFAULT_TIME_ZONE=${TIMEZONE}
     depends_on:
-      init-db:
-        condition: service_completed_successfully
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sS 'http://localhost:8081' || exit 1"]
-      interval: 5s
-      timeout: 5s
-      start_period: 30s
-      retries: 60
+      - init-db
 
   room-server:
     image: ${IMAGE_REGISTRY}/${IMAGE_ROOM_SERVER}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     expose:
       - "3333"
@@ -55,19 +45,18 @@ services:
     env_file:
       - ./.env
     environment:
+      - TZ=${TIMEZONE}
       - NODE_ENV=${ENV}
       - NODE_OPTIONS=--max-old-space-size=2048 --max-http-header-size=80000
-      - API_MAX_MODIFY_RECORD_COUNTS=${API_MAX_MODIFY_RECORD_COUNTS:-30}
+      - API_MAX_MODIFY_RECORD_COUNTS=${API_MAX_MODIFY_RECORD_COUNTS}
       - INSTANCE_MAX_MEMORY=4096M
       - ENABLE_SOCKET=true
     depends_on:
-      mysql:
-        condition: service_healthy
+      - mysql
 
   # Third Party Dockers
   gateway:
     image: ${IMAGE_REGISTRY}/${IMAGE_GATEWAY}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     ports:
       - 172.17.0.1:7538:80
@@ -75,48 +64,38 @@ services:
     environment:
       - TZ=${TIMEZONE}
     depends_on:
-      web-server:
-        condition: service_started
-      imageproxy-server:
-        condition: service_started
-      backend-server:
-        condition: service_healthy
-      room-server:
-        condition: service_started
-      init-appdata:
-        condition: service_completed_successfully
-
+      - web-server
+      - imageproxy-server
+      - backend-server
+      - room-server
+      - init-appdata
   minio:
     image: ${IMAGE_MINIO}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
-    command: server /data
+    command: server --console-address ":9001" /data
     expose:
       - "9000"
+      - "9001"
     volumes:
       - ${DATA_PATH}/minio/data:/data
       - ${DATA_PATH}/minio/config:/root/.minio
     environment:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
       - TZ=${TIMEZONE}
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sS 'http://localhost:9000' || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 30
 
   redis:
     image: ${IMAGE_REDIS}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     command:
       [
-          "redis-server",
-          "--appendonly",
-          "yes",
-          "--requirepass",
-          "${REDIS_PASSWORD}",
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--requirepass",
+        "${REDIS_PASSWORD}",
       ]
     expose:
       - "6379"
@@ -127,7 +106,6 @@ services:
 
   mysql:
     image: ${IMAGE_MYSQL}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     volumes:
       - ${DATA_PATH}/mysql:/var/lib/mysql
@@ -142,16 +120,9 @@ services:
       --collation-server=utf8mb4_general_ci
       --sql_mode=IGNORE_SPACE,NO_ENGINE_SUBSTITUTION
       --lower_case_table_names=2
-    healthcheck:
-      test: "mysql ${MYSQL_DATABASE} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} -e 'SELECT 1;'"
-      interval: 5s
-      timeout: 5s
-      start_period: 30s
-      retries: 60
 
   rabbitmq:
     image: ${IMAGE_RABBITMQ}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     restart: always
     volumes:
       - ${DATA_PATH}/rabbitmq:/var/lib/rabbitmq
@@ -163,26 +134,8 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
 
-  # init data
-  pre-init-db:
-    image: ${IMAGE_REGISTRY}/${IMAGE_INIT_DB}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
-    environment:
-      - TZ=${TIMEZONE}
-      - DB_HOST=${MYSQL_HOST}
-      - DB_PORT=${MYSQL_PORT}
-      - DB_NAME=${MYSQL_DATABASE}
-      - DB_USERNAME=${MYSQL_USERNAME}
-      - DB_PASSWORD=${MYSQL_PASSWORD}
-      - DATABASE_TABLE_PREFIX=${DATABASE_TABLE_PREFIX}
-      - ACTION=releaseLocks
-    depends_on:
-      mysql:
-        condition: service_healthy
-  
   init-db:
     image: ${IMAGE_REGISTRY}/${IMAGE_INIT_DB}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     environment:
       - TZ=${TIMEZONE}
       - DB_HOST=${MYSQL_HOST}
@@ -193,17 +146,13 @@ services:
       - DATABASE_TABLE_PREFIX=${DATABASE_TABLE_PREFIX}
       - ACTION=update
     depends_on:
-      pre-init-db:
-        condition: service_completed_successfully
+      - mysql
 
   # init-appdata
   init-appdata:
     image: ${IMAGE_REGISTRY}/${IMAGE_INIT_APPDATA}
-    pull_policy: ${IMAGE_PULL_POLICY:-if_not_present}
     env_file:
       - ./.env
     depends_on:
-      mysql:
-        condition: service_healthy
-      init-db:
-        condition: service_completed_successfully
+      - mysql
+      - init-db
