@@ -10,7 +10,7 @@ docker-compose down;
 docker-compose up -d;
 
 echo "Waiting for software to be ready ..."
-sleep 220;
+sleep 220s;
 
 target=$(docker-compose port gateway 80)
 
