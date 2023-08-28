@@ -19,5 +19,5 @@ You can open Apitable UI here:
 You can open PHPMyAdmin here:
 
     URL: https://[CI_CD_DOMAIN]:8543
-    email: [ADMIN_EMAIL]
+    username: root
     password: [ADMIN_PASSWORD]
