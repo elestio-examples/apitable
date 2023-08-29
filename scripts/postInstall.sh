@@ -4,7 +4,7 @@ set -o allexport; source .env; set +o allexport;
 #wait until the server is ready
 echo "Waiting for software to be ready ..."
 echo "It will take a bit of time ..."
-sleep 90s;
+sleep 130s;
 
 docker-compose down;
 docker-compose up -d;
