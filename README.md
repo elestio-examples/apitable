@@ -8,6 +8,10 @@ Deploy Apitable with CI/CD on Elestio
 <br/>
 <br/>
 
+# Configuration
+
+To deploy Apitable, you need `4 CPUs/8GB RAM` or more are recommended.
+
 # Once deployed ...
 
 You can open Apitable UI here:
